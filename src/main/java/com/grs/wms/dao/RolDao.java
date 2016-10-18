@@ -10,6 +10,7 @@ import com.grs.wms.bean.Rol;
 
 @Transactional
 public interface RolDao  extends CrudRepository<Rol,Integer> {
-	public List<Rol> findByIdAuthorities(Integer id);
+	public List<Rol> findByIdRol(Integer id);
+	public List<Rol> findAll();
 	
 }

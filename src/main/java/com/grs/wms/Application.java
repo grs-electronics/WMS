@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -22,6 +23,8 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,10 +32,14 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.grs.wms.dao.UsuarioDao;
+import com.grs.wms.security.UserDetailService;
+
 @SpringBootApplication
 @Controller
 @SessionAttributes("authorizationRequest")
 @EnableResourceServer
+@Configuration
 public class Application   extends WebMvcConfigurerAdapter{
 	
 	public static void main(String[] args) {
@@ -54,11 +61,11 @@ public class Application   extends WebMvcConfigurerAdapter{
 	@Configuration
 	@Order(-20)
 	protected static class LoginConfig extends WebSecurityConfigurerAdapter {
-
 		@Autowired
 		private AuthenticationManager authenticationManager;
-
-		@Override
+		@Autowired
+		private UsuarioDao usuarioDao;
+	
 		protected void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
 			http
@@ -68,18 +75,27 @@ public class Application   extends WebMvcConfigurerAdapter{
 			.and()
 				.authorizeRequests().anyRequest().authenticated();
 			// @formatter:on
+			
 		}
+		public UserDetailsService userDetailsServiceBean() throws Exception {
+	        return new UserDetailService(usuarioDao);
+	    }
 
 		@Override
 		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-			auth.parentAuthenticationManager(authenticationManager);
+			auth.userDetailsService(userDetailsServiceBean());
+			//auth.parentAuthenticationManager(authenticationManager);
 		}
 	}
 	@Configuration
 	@EnableAuthorizationServer
 	protected static class OAuth2AuthorizationConfig extends
 			AuthorizationServerConfigurerAdapter {
-
+		@Autowired
+		private UsuarioDao usuarioDao;
+		public UserDetailsService userDetailsServiceBean() throws Exception {
+	        return new UserDetailService(usuarioDao);
+	    }
 		@Autowired
 		private AuthenticationManager authenticationManager;
 
@@ -95,6 +111,7 @@ public class Application   extends WebMvcConfigurerAdapter{
 
 		@Override
 		public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+			
 			clients.inMemory()
 					.withClient("acme")
 					.secret("acmesecret")
@@ -105,8 +122,10 @@ public class Application   extends WebMvcConfigurerAdapter{
 		@Override
 		public void configure(AuthorizationServerEndpointsConfigurer endpoints)
 				throws Exception {
-			endpoints.authenticationManager(authenticationManager).accessTokenConverter(
-					jwtAccessTokenConverter());
+			endpoints.userDetailsService(userDetailsServiceBean())
+				.authenticationManager(authenticationManager).accessTokenConverter(jwtAccessTokenConverter());
+			/*endpoints.authenticationManager(authenticationManager).accessTokenConverter(
+					jwtAccessTokenConverter());*/
 		}
 
 		@Override

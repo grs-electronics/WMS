@@ -5,16 +5,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.jboss.logging.Property;
-
 @Entity
-@Table(name="users")
+@Table(name="usuario")
 public class Usuario {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Integer idUsers;
+	private Integer idUsuario;
 	@Column
 	private String nombre;
 	@Column
@@ -25,11 +24,13 @@ public class Usuario {
 	private String correo;
 	@Column
 	private Boolean habilitado;
-	public Integer getIdUsers() {
-		return idUsers;
+	@ManyToOne
+	private Rol rol;
+	public Integer getIdUsuario() {
+		return idUsuario;
 	}
-	public void setIdUsers(Integer idUsers) {
-		this.idUsers = idUsers;
+	public void setIdUsuario(Integer idUsuario) {
+		this.idUsuario = idUsuario;
 	}
 	public String getNombre() {
 		return nombre;
@@ -55,26 +56,32 @@ public class Usuario {
 	public void setCorreo(String correo) {
 		this.correo = correo;
 	}
-	public Boolean isHabilitado() {
+	public Boolean getHabilitado() {
 		return habilitado;
 	}
 	public void setHabilitado(Boolean habilitado) {
 		this.habilitado = habilitado;
 	}
-	public Usuario(Integer idUsers, String nombre, String username, String password, String correo,
-			Boolean habilitado) {
-		super();
-		this.idUsers = idUsers;
-		this.nombre = nombre;
-		this.username = username;
-		this.password = password;
-		this.correo = correo;
-		this.habilitado = habilitado;
+	public Rol getRol() {
+		return rol;
+	}
+	public void setRol(Rol rol) {
+		this.rol = rol;
 	}
 	public Usuario() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
+	public Usuario(Integer idUsuario, String nombre, String username, String password, String correo,
+			Boolean habilitado, Rol rol) {
+		super();
+		this.idUsuario = idUsuario;
+		this.nombre = nombre;
+		this.username = username;
+		this.password = password;
+		this.correo = correo;
+		this.habilitado = habilitado;
+		this.rol = rol;
+	}
 	
 }

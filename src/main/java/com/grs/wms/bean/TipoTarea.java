@@ -43,7 +43,6 @@ public class TipoTarea {
 	}
 	public TipoTarea() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 }

@@ -56,6 +56,7 @@ public class Application   extends WebMvcConfigurerAdapter{
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/login").setViewName("login");
 		registry.addViewController("/oauth/confirm_access").setViewName("authorize");
+		
 	}
 	
 	@Configuration
@@ -111,8 +112,8 @@ public class Application   extends WebMvcConfigurerAdapter{
 
 		@Override
 		public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-			
 			clients.inMemory()
+			
 					.withClient("acme")
 					.secret("acmesecret")
 					.authorizedGrantTypes("authorization_code", "refresh_token",

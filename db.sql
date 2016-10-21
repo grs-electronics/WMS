@@ -16,21 +16,6 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`db_wms_gt` /*!40100 DEFAULT CHARACTER S
 
 USE `db_wms_gt`;
 
-/*Table structure for table `authorities` */
-
-DROP TABLE IF EXISTS `authorities`;
-
-CREATE TABLE `authorities` (
-  `id_authorities` int(10) NOT NULL AUTO_INCREMENT,
-  `username` varchar(128) DEFAULT NULL,
-  `authority` varchar(128) DEFAULT NULL,
-  PRIMARY KEY (`id_authorities`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
-
-/*Data for the table `authorities` */
-
-insert  into `authorities`(`id_authorities`,`username`,`authority`) values (1,'Administrador','Administrador General del Sistema'),(2,'Operario','Operario de Bodega');
-
 /*Table structure for table `estado_tarea` */
 
 DROP TABLE IF EXISTS `estado_tarea`;
@@ -56,6 +41,20 @@ CREATE TABLE `proridad` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*Data for the table `proridad` */
+
+/*Table structure for table `rol` */
+
+DROP TABLE IF EXISTS `rol`;
+
+CREATE TABLE `rol` (
+  `id_rol` int(10) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`id_rol`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+/*Data for the table `rol` */
+
+insert  into `rol`(`id_rol`,`nombre`) values (1,'ROL_ADMIN'),(2,'ROL_USER');
 
 /*Table structure for table `solucion_tarea` */
 
@@ -86,19 +85,19 @@ CREATE TABLE `tarea` (
   `fecha_fin` varchar(64) DEFAULT NULL,
   `Comentario` longtext,
   `prioridad_id_prioridad` int(10) DEFAULT NULL,
-  `users_id_users` int(10) DEFAULT NULL,
-  `users_id_users_asignado` int(10) DEFAULT NULL,
+  `usuario_id_usuario` int(10) DEFAULT NULL,
+  `usuario_id_usuario_asignado` int(10) DEFAULT NULL,
   PRIMARY KEY (`id_tarea`),
   KEY `FK_tarea_estado` (`estado_id_estado`),
   KEY `FK_tarea_tipo` (`tipo_tarea_id_tipo_tarea`),
   KEY `FK_tarea_prioridad` (`prioridad_id_prioridad`),
-  KEY `FK_tarea_usuario_asignado` (`users_id_users_asignado`),
-  KEY `FK_tarea` (`users_id_users`),
-  CONSTRAINT `FK_tarea` FOREIGN KEY (`users_id_users`) REFERENCES `users` (`id_users`),
+  KEY `FK_tarea_usuario_asignado` (`usuario_id_usuario_asignado`),
+  KEY `FK_tarea` (`usuario_id_usuario`),
+  CONSTRAINT `FK_tarea` FOREIGN KEY (`usuario_id_usuario`) REFERENCES `usuario` (`id_usuario`),
   CONSTRAINT `FK_tarea_estado` FOREIGN KEY (`estado_id_estado`) REFERENCES `estado_tarea` (`id_estado_tarea`),
   CONSTRAINT `FK_tarea_prioridad` FOREIGN KEY (`prioridad_id_prioridad`) REFERENCES `proridad` (`id_prioridad`),
   CONSTRAINT `FK_tarea_tipo` FOREIGN KEY (`tipo_tarea_id_tipo_tarea`) REFERENCES `tipo_tarea` (`id_tipo_tarea`),
-  CONSTRAINT `FK_tarea_usuario_asignado` FOREIGN KEY (`users_id_users_asignado`) REFERENCES `users` (`id_users`)
+  CONSTRAINT `FK_tarea_usuario_asignado` FOREIGN KEY (`usuario_id_usuario_asignado`) REFERENCES `usuario` (`id_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*Data for the table `tarea` */
@@ -116,23 +115,26 @@ CREATE TABLE `tipo_tarea` (
 
 /*Data for the table `tipo_tarea` */
 
-/*Table structure for table `users` */
+/*Table structure for table `usuario` */
 
-DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `usuario`;
 
-CREATE TABLE `users` (
-  `id_users` int(10) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `usuario` (
+  `id_usuario` int(10) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(128) DEFAULT NULL,
   `username` varchar(128) NOT NULL,
   `password` varchar(128) DEFAULT NULL,
   `correo` varchar(128) DEFAULT NULL,
   `habilitado` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`id_users`,`username`)
+  `rol_id_rol` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id_usuario`,`username`),
+  KEY `FK_usuario` (`rol_id_rol`),
+  CONSTRAINT `FK_usuario` FOREIGN KEY (`rol_id_rol`) REFERENCES `rol` (`id_rol`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
-/*Data for the table `users` */
+/*Data for the table `usuario` */
 
-insert  into `users`(`id_users`,`nombre`,`username`,`password`,`correo`,`habilitado`) values (1,'Francisco Retana','retana','202cb962ac59075b964b07152d234b70','inforetana@gmail.com',NULL);
+insert  into `usuario`(`id_usuario`,`nombre`,`username`,`password`,`correo`,`habilitado`,`rol_id_rol`) values (1,'Francisco Retana','retana','123','inforetana@gmail.com',1,1);
 
 /* Procedure structure for procedure `sp_autenticarUsuario` */
 

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,12 +24,9 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -36,10 +34,8 @@ import com.grs.wms.dao.UsuarioDao;
 import com.grs.wms.security.UserDetailService;
 
 @SpringBootApplication
-@Controller
-@SessionAttributes("authorizationRequest")
+@RestController
 @EnableResourceServer
-@Configuration
 public class Application   extends WebMvcConfigurerAdapter{
 	
 	public static void main(String[] args) {
@@ -62,17 +58,20 @@ public class Application   extends WebMvcConfigurerAdapter{
 	@Configuration
 	@Order(-20)
 	protected static class LoginConfig extends WebSecurityConfigurerAdapter {
-		@Autowired
-		private AuthenticationManager authenticationManager;
+		 
 		@Autowired
 		private UsuarioDao usuarioDao;
 	
 		protected void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
-			http
-				.formLogin().loginPage("/login").permitAll()
+			
+			  http
+	            .authorizeRequests()
+	            .antMatchers(HttpMethod.OPTIONS, "/api/oauth/token").permitAll()
+	        .and()
+	            .formLogin().loginPage("/api/login").permitAll()
 			.and()
-				.requestMatchers().antMatchers("/login", "/oauth/authorize", "/oauth/confirm_access")
+				.requestMatchers().antMatchers("/api/login", "/api/oauth/authorize", "/api/oauth/confirm_access")
 			.and()
 				.authorizeRequests().anyRequest().authenticated();
 			// @formatter:on
@@ -90,8 +89,7 @@ public class Application   extends WebMvcConfigurerAdapter{
 	}
 	@Configuration
 	@EnableAuthorizationServer
-	protected static class OAuth2AuthorizationConfig extends
-			AuthorizationServerConfigurerAdapter {
+	protected static class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
 		@Autowired
 		private UsuarioDao usuarioDao;
 		public UserDetailsService userDetailsServiceBean() throws Exception {
@@ -109,17 +107,14 @@ public class Application   extends WebMvcConfigurerAdapter{
 			converter.setKeyPair(keyPair);
 			return converter;
 		}
-
 		@Override
 		public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 			clients.inMemory()
-			
-					.withClient("acme")
+					 .withClient("acme")
 					.secret("acmesecret")
 					.authorizedGrantTypes("authorization_code", "refresh_token",
-							"password").scopes("openid");
+							"password","implicit").scopes("openid");
 		}
-
 		@Override
 		public void configure(AuthorizationServerEndpointsConfigurer endpoints)
 				throws Exception {
@@ -128,7 +123,6 @@ public class Application   extends WebMvcConfigurerAdapter{
 			/*endpoints.authenticationManager(authenticationManager).accessTokenConverter(
 					jwtAccessTokenConverter());*/
 		}
-
 		@Override
 		public void configure(AuthorizationServerSecurityConfigurer oauthServer)
 				throws Exception {

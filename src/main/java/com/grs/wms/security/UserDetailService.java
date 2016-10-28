@@ -12,15 +12,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.grs.wms.bean.Rol;
 import com.grs.wms.bean.Usuario;
-import com.grs.wms.dao.RolDao;
 import com.grs.wms.dao.UsuarioDao;
 
 @Transactional
 public class UserDetailService implements UserDetailsService{
 	private UsuarioDao usuarioDao;
-	private RolDao rolDao;
 	public  UserDetailService(UsuarioDao usuarioDao) {
 		this.usuarioDao=usuarioDao;
 	}
@@ -44,4 +41,5 @@ public class UserDetailService implements UserDetailsService{
 		authorities.add(grantedAuthority);
 		return authorities;
 	}
+	
 }

@@ -1,11 +1,9 @@
 package com.grs.wms.sap.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import com.grs.wms.sap.Conexion;
-import com.sap.smb.sbo.api.IRecordset;
 import com.sap.smb.sbo.api.SBOCOMException;
 
 public class OrdenDeVentaController {

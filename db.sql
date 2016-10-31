@@ -29,18 +29,20 @@ CREATE TABLE `estado_tarea` (
 
 /*Data for the table `estado_tarea` */
 
-/*Table structure for table `proridad` */
+/*Table structure for table `prioridad` */
 
-DROP TABLE IF EXISTS `proridad`;
+DROP TABLE IF EXISTS `prioridad`;
 
-CREATE TABLE `proridad` (
+CREATE TABLE `prioridad` (
   `id_prioridad` int(10) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(128) DEFAULT NULL,
   `descripcion` longtext,
   PRIMARY KEY (`id_prioridad`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
-/*Data for the table `proridad` */
+/*Data for the table `prioridad` */
+
+insert  into `prioridad`(`id_prioridad`,`nombre`,`descripcion`) values (1,'Alta','Prioridad Extremadamente Urgente'),(2,'Media','Prioridad no tan máxima a atender'),(3,'Baja','Prioridad muy poco importante');
 
 /*Table structure for table `rol` */
 
@@ -54,7 +56,7 @@ CREATE TABLE `rol` (
 
 /*Data for the table `rol` */
 
-insert  into `rol`(`id_rol`,`nombre`) values (1,'ROL_ADMIN'),(2,'ROL_USER');
+insert  into `rol`(`id_rol`,`nombre`) values (1,'GRS-GT-ADMIN'),(2,'GRS-GT-OPER');
 
 /*Table structure for table `solucion_tarea` */
 
@@ -95,7 +97,7 @@ CREATE TABLE `tarea` (
   KEY `FK_tarea` (`usuario_id_usuario`),
   CONSTRAINT `FK_tarea` FOREIGN KEY (`usuario_id_usuario`) REFERENCES `usuario` (`id_usuario`),
   CONSTRAINT `FK_tarea_estado` FOREIGN KEY (`estado_id_estado`) REFERENCES `estado_tarea` (`id_estado_tarea`),
-  CONSTRAINT `FK_tarea_prioridad` FOREIGN KEY (`prioridad_id_prioridad`) REFERENCES `proridad` (`id_prioridad`),
+  CONSTRAINT `FK_tarea_prioridad` FOREIGN KEY (`prioridad_id_prioridad`) REFERENCES `prioridad` (`id_prioridad`),
   CONSTRAINT `FK_tarea_tipo` FOREIGN KEY (`tipo_tarea_id_tipo_tarea`) REFERENCES `tipo_tarea` (`id_tipo_tarea`),
   CONSTRAINT `FK_tarea_usuario_asignado` FOREIGN KEY (`usuario_id_usuario_asignado`) REFERENCES `usuario` (`id_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -127,14 +129,15 @@ CREATE TABLE `usuario` (
   `correo` varchar(128) DEFAULT NULL,
   `habilitado` tinyint(1) DEFAULT NULL,
   `rol_id_rol` int(10) DEFAULT NULL,
+  `pais` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id_usuario`,`username`),
   KEY `FK_usuario` (`rol_id_rol`),
   CONSTRAINT `FK_usuario` FOREIGN KEY (`rol_id_rol`) REFERENCES `rol` (`id_rol`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 /*Data for the table `usuario` */
 
-insert  into `usuario`(`id_usuario`,`nombre`,`username`,`password`,`correo`,`habilitado`,`rol_id_rol`) values (1,'Francisco Retana','retana','123','inforetana@gmail.com',1,1);
+insert  into `usuario`(`id_usuario`,`nombre`,`username`,`password`,`correo`,`habilitado`,`rol_id_rol`,`pais`) values (1,'Francisco Retana','retana','202cb962ac59075b964b07152d234b70','inforetana@gmail.com',1,1,'Guatemala'),(2,'Juan Perez','oper1',NULL,'jp@gmail.com',1,2,'Guatemala'),(3,'Mario Schulz','oper2',NULL,'ms@gmail.com',1,2,'Guatemala');
 
 /* Procedure structure for procedure `sp_autenticarUsuario` */
 
